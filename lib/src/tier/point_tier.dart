@@ -1,4 +1,5 @@
-import '../tier.dart';
+import '../annotation/annotation.dart';
+import 'tier.dart';
 import 'package:dart_json_mapper/dart_json_mapper.dart'
     show jsonSerializable, Json;
 
@@ -28,4 +29,14 @@ class PointTier extends Tier {
         super.end,
         super.annotations,
       );
+
+  @override
+  PointTier clone() {
+    return PointTier(
+      name: '${this.name}',
+      start: this.start,
+      end: this.end,
+      annotations: annotations.deepClone(),
+    );
+  }
 }

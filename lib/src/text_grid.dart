@@ -1,11 +1,13 @@
 import 'package:collection/collection.dart';
 import 'package:dart_json_mapper/dart_json_mapper.dart'
     show JsonMapper, jsonSerializable, JsonProperty;
+import 'package:flutter_textgrid/src/cloneable_interface.dart';
+import 'package:flutter_textgrid/src/text_grid_type.dart';
 
-import 'tier.dart';
+import 'tier/tier.dart';
 
 @jsonSerializable
-class TextGrid {
+class TextGrid implements ICloneable<TextGrid> {
   @JsonProperty()
   double start;
 
@@ -15,8 +17,15 @@ class TextGrid {
   @JsonProperty()
   late List<Tier> tiers;
 
-  TextGrid({this.start = -1, this.end = -1, List<Tier>? tiers})
-      : assert(
+  @JsonProperty(ignore: true)
+  TextGridType type;
+
+  TextGrid({
+    this.start = -1,
+    this.end = -1,
+    List<Tier>? tiers,
+    this.type = TextGridType.long,
+  }) : assert(
           start != -1 && end != -1 || start == -1 && end == -1,
           "When passing start or end, both values must be set.",
         ) {
@@ -67,5 +76,15 @@ class TextGrid {
   @override
   String toString() {
     return JsonMapper.serialize(this);
+  }
+
+  @override
+  TextGrid clone() {
+    return TextGrid(
+      start: start,
+      end: end,
+      type: type,
+      tiers: tiers.deepClone(),
+    );
   }
 }

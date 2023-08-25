@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_textgrid/src/annotation.dart';
+import 'package:flutter_textgrid/src/annotation/annotation.dart';
 import 'package:test/test.dart';
 import 'package:flutter_textgrid/src/annotation/interval_annotation.dart';
 import 'package:flutter_textgrid/src/io/text_grid_serializer.dart';

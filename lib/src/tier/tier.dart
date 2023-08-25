@@ -1,14 +1,15 @@
 import 'package:collection/collection.dart';
 import 'package:dart_json_mapper/dart_json_mapper.dart'
     show Json, jsonSerializable;
-import 'package:flutter_textgrid/src/annotation.dart';
+import 'package:flutter_textgrid/src/annotation/annotation.dart';
+import 'package:flutter_textgrid/src/cloneable_interface.dart';
 
 @jsonSerializable
 enum TierType { point, interval }
 
 @jsonSerializable
 @Json(discriminatorProperty: 'tierType')
-abstract class Tier {
+abstract class Tier implements ICloneable<Tier> {
   late List<Annotation> annotations;
 
   double start;
@@ -67,4 +68,14 @@ abstract class Tier {
 
   @override
   int get hashCode => Object.hash(start, end, name, annotations);
+}
+
+extension TiersX on List<Tier> {
+  List<Tier> deepClone() {
+    final List<Tier> tiers = List.empty(growable: true);
+    for (final a in this) {
+      tiers.add(a.clone());
+    }
+    return tiers;
+  }
 }

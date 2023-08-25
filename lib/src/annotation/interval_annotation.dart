@@ -1,4 +1,4 @@
-import '../annotation.dart';
+import 'annotation.dart';
 import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable;
 
 @jsonSerializable
@@ -19,4 +19,13 @@ class IntervalAnnotation extends Annotation {
 
   @override
   int get hashCode => Object.hash(start, end, text);
+
+  @override
+  IntervalAnnotation clone() {
+    return IntervalAnnotation(
+      start: start,
+      end: end,
+      text: '$text',
+    );
+  }
 }

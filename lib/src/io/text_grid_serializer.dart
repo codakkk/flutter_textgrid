@@ -1,8 +1,11 @@
+import 'dart:html';
+
 import 'package:flutter_textgrid/src/io/text_grid_io_exception.dart';
 import 'package:flutter_textgrid/src/text_grid.dart';
-import 'package:flutter_textgrid/src/tier.dart';
+import 'package:flutter_textgrid/src/text_grid_type.dart';
+import 'package:flutter_textgrid/src/tier/tier.dart';
 
-import '../annotation.dart';
+import '../annotation/annotation.dart';
 import '../annotation/interval_annotation.dart';
 import '../annotation/point_annotation.dart';
 import '../tier/interval_tier.dart';
@@ -330,7 +333,82 @@ class TextGridSerializer {
     );
   }
 
-  String textGridToString(TextGrid tgt) {
+  String textGridToString(
+    TextGrid tgt, {
+    TextGridType type = TextGridType.long,
+  }) =>
+      switch (type) {
+        TextGridType.long => _textGridToLongString(tgt),
+        TextGridType.short => _textGridToShortString(tgt)
+      };
+
+  String _textGridToShortString(TextGrid textGrid) {
+    final buffer = StringBuffer();
+
+    final result = [
+      'File type = "ooTextFile"',
+      'Object class = "TextGrid"',
+      '',
+      '${textGrid.start}',
+      '${textGrid.end}',
+      '<exists>',
+      '${textGrid.tiers.length}',
+    ];
+
+    buffer.write('File type = "ooTextFile"$defaultLineSeparator');
+
+    return result.join(defaultLineSeparator);
+    /*
+    def export_to_short_textgrid(textgrid):
+    '''Convert a TextGrid object into a string of Praat short TextGrid format.'''
+    result = ['File type = "ooTextFile"',
+              'Object class = "TextGrid"',
+              '',
+              str(textgrid.start_time),
+              str(textgrid.end_time),
+              '<exists>',
+              str(len(textgrid))]
+    textgrid_corrected = correct_start_end_times_and_fill_gaps(textgrid)
+    for tier in textgrid_corrected:
+        result += ['"' + tier.tier_type() + '"',
+                   '"' + escape_text(tier.name) + '"',
+                   str(tier.start_time), str(tier.end_time), str(len(tier))]
+        if isinstance(tier, IntervalTier):
+            result += [u'{0}\n{1}\n"{2}"'.format(obj.start_time, obj.end_time, escape_text(obj.text))
+                       for obj in tier]
+        elif isinstance(tier, PointTier):
+            result += [u'{0}\n"{1}"'.format(obj.time, escape_text(obj.text))
+                       for obj in tier]
+        else:
+            raise Exception('Unknown tier type: {0}'.format(tier.name))
+    return '\n'.join(result)
+    
+     */
+  }
+
+  /*
+    Correct the start/end times of all tiers and fill gaps.
+    Returns a copy of a textgrid, where empty gaps between intervals
+    are filled with empty intervals and where start and end times are
+    unified with the start and end times of the whole textgrid.
+  */
+  TextGrid correctStartEndTimesAndFillGaps(TextGrid tg) {
+    final tgCopy = tg.clone();
+    for (int i = 0; i < tgCopy.tiers.length; ++i) {
+      final tier = tgCopy.tiers[i];
+      if (tier is IntervalTier) {
+        final tierCorrected = tier.copyWithGapsFilled(
+          startTime: tg.start,
+          endTime: tg.end,
+        );
+        tgCopy.tiers[i] = tierCorrected;
+      }
+    }
+
+    return tgCopy;
+  }
+
+  String _textGridToLongString(TextGrid tgt) {
     final str_tgt = StringBuffer();
     str_tgt.write("File type = \"ooTextFile\"$defaultLineSeparator");
     str_tgt.write("Object class = \"TextGrid\"$defaultLineSeparator");

@@ -1,4 +1,4 @@
-import '../annotation.dart';
+import 'annotation.dart';
 import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable;
 
 @jsonSerializable
@@ -31,4 +31,12 @@ class PointAnnotation extends Annotation {
 
   @override
   int get hashCode => Object.hash(start, end, text);
+
+  @override
+  PointAnnotation clone() {
+    return PointAnnotation(
+      time: this.time,
+      text: '$text',
+    );
+  }
 }

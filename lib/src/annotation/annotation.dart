@@ -1,7 +1,8 @@
 import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable;
+import 'package:flutter_textgrid/src/cloneable_interface.dart';
 
 @jsonSerializable
-abstract class Annotation {
+abstract class Annotation implements ICloneable<Annotation> {
   double start;
 
   double end;
@@ -24,4 +25,14 @@ abstract class Annotation {
 
   @override
   int get hashCode => Object.hash(start, end, text);
+}
+
+extension AnnotationsX on List<Annotation> {
+  List<Annotation> deepClone() {
+    final List<Annotation> annotations = List.empty(growable: true);
+    for (final a in this) {
+      annotations.add(a.clone());
+    }
+    return annotations;
+  }
 }
