@@ -1,19 +1,21 @@
-import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable;
 import 'package:flutter_textgrid/src/cloneable_interface.dart';
 
-@jsonSerializable
-abstract class Annotation implements ICloneable<Annotation> {
-  double start;
+import '../utils/utils.dart';
 
-  double end;
+abstract class Annotation implements ICloneable<Annotation> {
+  Time start;
+
+  Time end;
 
   String text;
+
+  Time get duration => end - start;
 
   Annotation({
     required this.start,
     required this.end,
     required this.text,
-  });
+  }) : assert(start <= end, "Start time after end time.");
 
   @override
   bool operator ==(Object other) {

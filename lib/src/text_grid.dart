@@ -1,34 +1,24 @@
 import 'package:collection/collection.dart';
-import 'package:dart_json_mapper/dart_json_mapper.dart'
-    show JsonMapper, jsonSerializable, JsonProperty;
 import 'package:flutter_textgrid/src/cloneable_interface.dart';
 import 'package:flutter_textgrid/src/text_grid_type.dart';
 
 import 'tier/tier.dart';
+import 'utils/utils.dart';
 
-@jsonSerializable
 class TextGrid implements ICloneable<TextGrid> {
-  @JsonProperty()
-  double start;
+  Time startTime;
+  Time endTime;
 
-  @JsonProperty()
-  double end;
-
-  @JsonProperty()
   late List<Tier> tiers;
 
-  @JsonProperty(ignore: true)
   TextGridType type;
 
   TextGrid({
-    this.start = -1,
-    this.end = -1,
+    this.startTime = Time.zero,
+    this.endTime = Time.zero,
     List<Tier>? tiers,
     this.type = TextGridType.long,
-  }) : assert(
-          start != -1 && end != -1 || start == -1 && end == -1,
-          "When passing start or end, both values must be set.",
-        ) {
+  }) {
     this.tiers = tiers ?? List.empty(growable: true);
   }
 
@@ -65,24 +55,19 @@ class TextGrid implements ICloneable<TextGrid> {
     if (other is! TextGrid) {
       return false;
     }
-    return start == other.start &&
-        end == other.end &&
+    return startTime == other.startTime &&
+        endTime == other.endTime &&
         const ListEquality().equals(tiers, other.tiers);
   }
 
   @override
-  int get hashCode => Object.hash(start, end, tiers);
-
-  @override
-  String toString() {
-    return JsonMapper.serialize(this);
-  }
+  int get hashCode => Object.hash(startTime, endTime, tiers);
 
   @override
   TextGrid clone() {
     return TextGrid(
-      start: start,
-      end: end,
+      startTime: startTime,
+      endTime: endTime,
       type: type,
       tiers: tiers.deepClone(),
     );

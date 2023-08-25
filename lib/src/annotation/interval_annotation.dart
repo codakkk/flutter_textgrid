@@ -1,7 +1,5 @@
 import 'annotation.dart';
-import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable;
 
-@jsonSerializable
 class IntervalAnnotation extends Annotation {
   IntervalAnnotation({
     required super.start,

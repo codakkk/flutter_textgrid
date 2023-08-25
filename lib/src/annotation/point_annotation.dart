@@ -1,24 +1,23 @@
+import '../utils/utils.dart';
 import 'annotation.dart';
-import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable;
 
-@jsonSerializable
 class PointAnnotation extends Annotation {
   PointAnnotation({
-    required double time,
+    required Time time,
     required super.text,
   }) : super(start: time, end: time);
 
-  double get time => start;
+  Time get time => start;
 
-  set time(double value) {
+  set time(Time value) {
     super.start = value;
     super.end = value;
   }
 
-  set start(double v) =>
+  set start(Time v) =>
       throw UnsupportedError("[PointAnnotation]: use time instead of start.");
 
-  set end(double v) =>
+  set end(Time v) =>
       throw UnsupportedError("[PointAnnotation]: use time instead of end.");
 
   @override
