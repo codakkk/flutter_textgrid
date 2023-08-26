@@ -1,14 +1,12 @@
-import '../tier.dart';
-import 'package:dart_json_mapper/dart_json_mapper.dart'
-    show jsonSerializable, Json;
+import '../annotation/annotation.dart';
+import '../utils/utils.dart';
+import 'tier.dart';
 
-@jsonSerializable
-@Json(discriminatorValue: TierType.point)
 class PointTier extends Tier {
   PointTier({
     required super.name,
-    super.start = -1,
-    super.end = -1,
+    super.startTime = Time.zero,
+    super.endTime = Time.zero,
     super.annotations,
   }) : super(tierType: TierType.point);
 
@@ -23,9 +21,19 @@ class PointTier extends Tier {
 
   @override
   int get hashCode => Object.hash(
-        super.start,
+        super.startTime,
         super.name,
-        super.end,
+        super.endTime,
         super.annotations,
       );
+
+  @override
+  PointTier clone() {
+    return PointTier(
+      name: name,
+      startTime: startTime,
+      endTime: endTime,
+      annotations: annotations.deepClone(),
+    );
+  }
 }

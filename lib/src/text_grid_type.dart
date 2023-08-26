@@ -1,0 +1,4 @@
+enum TextGridType {
+  long,
+  short,
+}

@@ -1,25 +1,25 @@
-import '../annotation.dart';
-import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable;
+import '../utils/utils.dart';
+import 'annotation.dart';
 
-@jsonSerializable
 class PointAnnotation extends Annotation {
   PointAnnotation({
-    required double time,
+    required this.time,
     required super.text,
-  }) : super(start: time, end: time);
+  }) : super(startTime: time, endTime: time);
 
-  double get time => start;
+  Time time;
 
-  set time(double value) {
-    super.start = value;
-    super.end = value;
-  }
+  @override
+  Time get startTime => time;
 
-  set start(double v) =>
-      throw UnsupportedError("[PointAnnotation]: use time instead of start.");
+  @override
+  set startTime(Time v) => time = v;
 
-  set end(double v) =>
-      throw UnsupportedError("[PointAnnotation]: use time instead of end.");
+  @override
+  Time get endTime => time;
+
+  @override
+  set endTime(Time v) => time = v;
 
   @override
   bool operator ==(Object other) {
@@ -30,5 +30,13 @@ class PointAnnotation extends Annotation {
   }
 
   @override
-  int get hashCode => Object.hash(start, end, text);
+  int get hashCode => Object.hash(startTime, endTime, text);
+
+  @override
+  PointAnnotation clone() {
+    return PointAnnotation(
+      time: time,
+      text: text,
+    );
+  }
 }
