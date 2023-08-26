@@ -3,27 +3,20 @@ import 'annotation.dart';
 
 class PointAnnotation extends Annotation {
   PointAnnotation({
-    required Time time,
+    required this.time,
     required super.text,
-  })  : _time = time,
-        super(startTime: time, endTime: time);
+  }) : super(startTime: time, endTime: time);
 
-  Time _time;
-
-  Time get time => _time;
-
-  set time(Time value) {
-    _time = value;
-  }
+  Time time;
 
   @override
-  Time get startTime => _time;
+  Time get startTime => time;
 
   @override
   set startTime(Time v) => time = v;
 
   @override
-  Time get endTime => _time;
+  Time get endTime => time;
 
   @override
   set endTime(Time v) => time = v;
@@ -42,8 +35,8 @@ class PointAnnotation extends Annotation {
   @override
   PointAnnotation clone() {
     return PointAnnotation(
-      time: this.time,
-      text: '$text',
+      time: time,
+      text: text,
     );
   }
 }

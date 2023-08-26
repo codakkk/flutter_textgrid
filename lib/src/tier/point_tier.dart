@@ -30,9 +30,9 @@ class PointTier extends Tier {
   @override
   PointTier clone() {
     return PointTier(
-      name: '${this.name}',
-      startTime: this.startTime,
-      endTime: this.endTime,
+      name: name,
+      startTime: startTime,
+      endTime: endTime,
       annotations: annotations.deepClone(),
     );
   }

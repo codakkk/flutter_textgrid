@@ -17,7 +17,7 @@ class IntervalTier extends Tier {
     double? endTime,
     String emptyString = '',
   }) {
-    final tierCopy = this.clone();
+    final tierCopy = clone();
 
     if (startTime != null) {
       tierCopy.startTime = startTime.toTime();
@@ -94,9 +94,9 @@ class IntervalTier extends Tier {
   @override
   IntervalTier clone() {
     return IntervalTier(
-      name: '${this.name}',
-      startTime: this.startTime,
-      endTime: this.endTime,
+      name: name,
+      startTime: startTime,
+      endTime: endTime,
       annotations: annotations.deepClone(),
     );
   }

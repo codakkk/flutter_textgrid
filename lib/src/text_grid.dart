@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_textgrid/src/cloneable_interface.dart';
-import 'package:flutter_textgrid/src/text_grid_type.dart';
 
 import 'tier/tier.dart';
 import 'utils/utils.dart';
@@ -11,13 +10,10 @@ class TextGrid implements ICloneable<TextGrid> {
 
   late List<Tier> tiers;
 
-  TextGridType type;
-
   TextGrid({
     this.startTime = Time.zero,
     this.endTime = Time.zero,
     List<Tier>? tiers,
-    this.type = TextGridType.long,
   }) {
     this.tiers = tiers ?? List.empty(growable: true);
   }
@@ -68,7 +64,6 @@ class TextGrid implements ICloneable<TextGrid> {
     return TextGrid(
       startTime: startTime,
       endTime: endTime,
-      type: type,
       tiers: tiers.deepClone(),
     );
   }

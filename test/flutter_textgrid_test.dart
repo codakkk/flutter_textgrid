@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_textgrid/flutter_textgrid.dart';
+import 'package:flutter_textgrid/src/io/text_grid_io_exception.dart';
 import 'package:flutter_textgrid/src/io/text_grid_serializer.dart';
 import 'package:test/test.dart';
 
@@ -95,81 +96,6 @@ void main() {
       );
     },
   );
-  group(
-    "TextGrid Long Type",
-    () {
-      late TextGridSerializer tgs;
-      late String tg1String;
-      late String tg1ValidatedString;
-
-      setUp(() {
-        tgs = TextGridSerializer();
-        tg1String = File("test/assets/tg1.TextGrid").readAsStringSync();
-        tg1ValidatedString =
-            File("test/assets/tg1_validated.TextGrid").readAsStringSync();
-      });
-
-      test(
-        'testLoadingTextGridWithoutException',
-        () {
-          TextGrid tgInput = tgs.fromString(tg1String);
-          TextGrid tgValidated = tgs.fromString(tg1ValidatedString);
-
-          expect(tgInput, tgValidated);
-        },
-      );
-
-      test(
-        'Test Dumping TextGrid',
-        () {
-          TextGrid tg = tgs.fromString(tg1String);
-          expect(tg1ValidatedString, isNot(tgs.textGridToString(tg)));
-        },
-      );
-
-      test(
-        'Test Equals',
-        () {
-          final textGrid = tgs.fromString(tg1String);
-          final validatedTextGrid = tgs.fromString(tg1ValidatedString);
-
-          expect(textGrid, validatedTextGrid);
-        },
-      );
-
-      test(
-        'Long Version: Performance Test',
-        () {
-          const xmax = 10000;
-          final List<Annotation> intervals = List.empty(growable: true);
-
-          for (int i = 0; i < xmax; ++i) {
-            intervals.add(
-              IntervalAnnotation(
-                startTime: i.toTime(),
-                endTime: (i + 1).toTime(),
-                text: i.toString(),
-              ),
-            );
-          }
-
-          final tier = IntervalTier(
-            name: "lots",
-            startTime: Time.zero,
-            endTime: xmax.toTime(),
-            annotations: intervals,
-          );
-          final tg = TextGrid(
-            startTime: Time.zero,
-            endTime: Time.int(xmax),
-          );
-          tg.addTier(tier);
-
-          expect(tg, isNot(null));
-        },
-      );
-    },
-  );
 
   group(
     "Tier",
@@ -187,8 +113,8 @@ void main() {
           t.addAnnotation(ao1);
 
           expect(t.annotations.length == 1, true);
-          expect(t.startTime == 0.0, true);
-          expect(t.endTime == 0.5, true);
+          expect(t.startTime == Time(0.0), true);
+          expect(t.endTime == Time(0.5), true);
 
           // Append to IntervalTier leaving empty space (0.1)
           final ao2 = IntervalAnnotation(
@@ -198,8 +124,8 @@ void main() {
           );
           t.addAnnotation(ao2);
           expect(t.annotations.length == 2, true);
-          expect(t.startTime == 0.0, true);
-          expect(t.endTime == 0.75, true);
+          expect(t.startTime == Time(0.0), true);
+          expect(t.endTime == Time(0.75), true);
 
           final ao3 = IntervalAnnotation(
             startTime: const Time(0.81),
@@ -208,8 +134,8 @@ void main() {
           );
           t.addAnnotation(ao3);
           expect(t.annotations.length == 3, true);
-          expect(t.startTime == 0.0, true);
-          expect(t.endTime == 0.9, true);
+          expect(t.startTime == const Time(0.0), true);
+          expect(t.endTime == const Time(0.9), true);
 
           // Insert between existing annotations
           // leaving gaps on both sides
@@ -220,8 +146,8 @@ void main() {
           );
           t.addAnnotation(ao4);
           expect(t.annotations.length == 4, true);
-          expect(t.startTime == 0.0, true);
-          expect(t.endTime == 0.9, true);
+          expect(t.startTime == const Time(0.0), true);
+          expect(t.endTime == const Time(0.9), true);
 
           // Meeting preeceding annotation
           final ao5 = IntervalAnnotation(
@@ -231,8 +157,8 @@ void main() {
           );
           t.addAnnotation(ao5);
           expect(t.annotations.length == 5, true);
-          expect(t.startTime == 0.0, true);
-          expect(t.endTime == 0.9, true);
+          expect(t.startTime == const Time(0.0), true);
+          expect(t.endTime == const Time(0.9), true);
 
           // Meeting preeceding and succeeding annotation
           final ao6 = IntervalAnnotation(
@@ -242,8 +168,8 @@ void main() {
           );
           t.addAnnotation(ao6);
           expect(t.annotations.length == 6, true);
-          expect(t.startTime == 0.0, true);
-          expect(t.endTime == 0.9, true);
+          expect(t.startTime == const Time(0.0), true);
+          expect(t.endTime == const Time(0.9), true);
 
           // insert at a place that is already occupied
           // within ao3
@@ -292,7 +218,7 @@ void main() {
           // Check that no annotation has been added
           expect(t.annotations.length == 6, true);
           expect(t.startTime == Time.zero, true);
-          expect(t.endTime == 0.9, true);
+          expect(t.endTime == const Time(0.9), true);
         },
       );
       test(
@@ -300,48 +226,48 @@ void main() {
         () {
           final tier = IntervalTier(
             name: "",
-            startTime: Time(1),
-            endTime: Time(2),
+            startTime: const Time(1),
+            endTime: const Time(2),
           );
 
           // Check whether specified start/end times are used
-          expect(tier.startTime == 1, isTrue);
-          expect(tier.endTime == 2, isTrue);
+          expect(tier.startTime == const Time(1), isTrue);
+          expect(tier.endTime == const Time(2), isTrue);
 
           // Check whether adding an annotation within specified
           // start and end times leaves them unchanged
           tier.addAnnotation(
             IntervalAnnotation(
-              startTime: Time(1.1),
-              endTime: Time(1.9),
+              startTime: const Time(1.1),
+              endTime: const Time(1.9),
               text: 'text',
             ),
           );
 
-          expect(tier.startTime == 1, isTrue);
-          expect(tier.endTime == 2, isTrue);
+          expect(tier.startTime == const Time(1), isTrue);
+          expect(tier.endTime == const Time(2), isTrue);
 
           // Expand end time by adding an annotation that ends later
           tier.addAnnotation(
             IntervalAnnotation(
-              startTime: Time(2),
-              endTime: Time(3),
+              startTime: const Time(2),
+              endTime: const Time(3),
               text: 'text',
             ),
           );
-          expect(tier.startTime == 1, isTrue);
-          expect(tier.endTime == 3, isTrue);
+          expect(tier.startTime == const Time(1), isTrue);
+          expect(tier.endTime == const Time(3), isTrue);
 
           // Expand start time by adding an annotation that starts ealier
           tier.addAnnotation(
             IntervalAnnotation(
               startTime: Time.zero,
-              endTime: Time(1),
+              endTime: const Time(1),
               text: 'text',
             ),
           );
-          expect(tier.startTime == 0, isTrue);
-          expect(tier.endTime == 3, isTrue);
+          expect(tier.startTime == const Time(0), isTrue);
+          expect(tier.endTime == const Time(3), isTrue);
         },
       );
     },
@@ -358,20 +284,20 @@ void main() {
             () {
               final ict = IntervalAnnotation(
                 startTime: Time.zero,
-                endTime: Time(1.0),
+                endTime: const Time(1.0),
                 text: "",
               );
 
               // Changing start and end times has an effect
               ict.startTime = Time(0.5);
-              expect(ict.startTime == 0.5, isTrue);
+              expect(ict.startTime == Time(0.5), isTrue);
               ict.endTime = Time(1.5);
-              expect(ict.endTime == 1.5, isTrue);
+              expect(ict.endTime == Time(1.5), isTrue);
 
               // Correct order of start and end times is checked
               expect(
                 () => IntervalAnnotation(
-                    startTime: Time(1.0), endTime: Time.zero, text: ""),
+                    startTime: const Time(1.0), endTime: Time.zero, text: ""),
                 throwsA(isA<AssertionError>()),
               );
 
@@ -384,7 +310,7 @@ void main() {
             "Change Text",
             () {
               final ict = IntervalAnnotation(
-                  startTime: Time.zero, endTime: Time(1.0), text: "text");
+                  startTime: Time.zero, endTime: const Time(1.0), text: "text");
 
               expect(ict.text == "text", isTrue);
               ict.text = "text changed";
@@ -397,17 +323,17 @@ void main() {
             () {
               final id1 = IntervalAnnotation(
                 startTime: Time.zero,
-                endTime: Time(1.0),
+                endTime: const Time(1.0),
                 text: "",
               );
-              expect(id1.duration == 1.0, isTrue);
+              expect(id1.duration == const Time(1.0), isTrue);
 
               final id2 = IntervalAnnotation(
-                startTime: Time(1.0),
-                endTime: Time(1.0),
+                startTime: const Time(1.0),
+                endTime: const Time(1.0),
                 text: "",
               );
-              expect(id2.duration == 0.0, isTrue);
+              expect(id2.duration == Time.zero, isTrue);
             },
           );
 
@@ -416,34 +342,34 @@ void main() {
             () {
               final ie1 = IntervalAnnotation(
                 startTime: Time.zero,
-                endTime: Time(1),
+                endTime: const Time(1),
                 text: 'text',
               );
 
               final ie2 = IntervalAnnotation(
                 startTime: Time.zero,
-                endTime: Time(1),
+                endTime: const Time(1),
                 text: 'text',
               );
               expect(ie1 == ie2, isTrue);
 
               final ie3 = IntervalAnnotation(
-                startTime: Time(1),
-                endTime: Time(1),
+                startTime: const Time(1),
+                endTime: const Time(1),
                 text: 'text',
               );
               expect(ie1 == ie3, isFalse);
 
               final ie4 = IntervalAnnotation(
                 startTime: Time.zero,
-                endTime: Time(2),
+                endTime: const Time(2),
                 text: 'text',
               );
               expect(ie1 == ie4, isFalse);
 
               final ie5 = IntervalAnnotation(
                 startTime: Time.zero,
-                endTime: Time(1),
+                endTime: const Time(1),
                 text: 'text changed',
               );
               expect(ie1 == ie5, isFalse);
@@ -455,7 +381,7 @@ void main() {
             () {
               final ir = IntervalAnnotation(
                 startTime: Time.zero,
-                endTime: Time(1),
+                endTime: const Time(1),
                 text: "text",
               );
               final c = ir.clone();
@@ -474,19 +400,19 @@ void main() {
               final p = PointAnnotation(time: Time.zero, text: "");
               p.time = Time(0.5);
 
-              expect(p.time == 0.5, isTrue);
-              expect(p.startTime == 0.5, isTrue);
-              expect(p.endTime == 0.5, isTrue);
+              expect(p.time == const Time(0.5), isTrue);
+              expect(p.startTime == const Time(0.5), isTrue);
+              expect(p.endTime == const Time(0.5), isTrue);
 
               p.startTime = Time(1.0);
-              expect(p.time == 1, isTrue);
-              expect(p.startTime == 1, isTrue);
-              expect(p.endTime == 1, isTrue);
+              expect(p.time == const Time(1), isTrue);
+              expect(p.startTime == const Time(1), isTrue);
+              expect(p.endTime == const Time(1), isTrue);
 
               p.endTime = Time(0.5);
-              expect(p.time == 0.5, isTrue);
-              expect(p.startTime == 0.5, isTrue);
-              expect(p.endTime == 0.5, isTrue);
+              expect(p.time == const Time(0.5), isTrue);
+              expect(p.startTime == const Time(0.5), isTrue);
+              expect(p.endTime == const Time(0.5), isTrue);
             },
           );
 
@@ -516,7 +442,226 @@ void main() {
   );
 
   group(
-    "TextGrid Short Type",
-    () {},
+    "TextGrid: Long",
+    () {
+      late TextGridSerializer tgs;
+      late String tg1String;
+      late String tg1ValidatedString;
+
+      setUp(() {
+        tgs = TextGridSerializer();
+        tg1String = File("test/assets/tg1.TextGrid").readAsStringSync();
+        tg1ValidatedString =
+            File("test/assets/tg1_validated.TextGrid").readAsStringSync();
+      });
+
+      group(
+        'Loading',
+        () {
+          test(
+            'From String',
+            () {
+              TextGrid tgInput = tgs.fromString(tg1String);
+              TextGrid tgValidated = tgs.fromString(tg1ValidatedString);
+
+              expect(tgInput, tgValidated);
+            },
+          );
+
+          test(
+            'From File',
+            () async {
+              final result = tgs.fromFile(File('test/assets/tg1.TextGrid'));
+              await expectLater(
+                result,
+                completion(
+                  isNot(
+                    throwsA(
+                      isA<TextGridIOException>(),
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+
+          test(
+            'From Path',
+            () async {
+              final result = tgs.fromPath('test/assets/tg1.TextGrid');
+              await expectLater(
+                result,
+                completion(
+                  isNot(
+                    throwsA(
+                      isA<TextGridIOException>(),
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+
+      test(
+        'Dumping',
+        () {
+          TextGrid tg = tgs.fromString(tg1String);
+          expect(tg1ValidatedString, isNot(tgs.textGridToString(tg)));
+        },
+      );
+
+      test(
+        'Equals',
+        () {
+          final textGrid = tgs.fromString(tg1String);
+          final validatedTextGrid = tgs.fromString(tg1ValidatedString);
+
+          expect(textGrid, validatedTextGrid);
+        },
+      );
+
+      test(
+        'Performance Test',
+        () {
+          const xmax = 10000;
+          final List<Annotation> intervals = List.empty(growable: true);
+
+          for (int i = 0; i < xmax; ++i) {
+            intervals.add(
+              IntervalAnnotation(
+                startTime: i.toTime(),
+                endTime: (i + 1).toTime(),
+                text: i.toString(),
+              ),
+            );
+          }
+
+          final tier = IntervalTier(
+            name: "lots",
+            startTime: Time.zero,
+            endTime: xmax.toTime(),
+            annotations: intervals,
+          );
+          final tg = TextGrid(
+            startTime: Time.zero,
+            endTime: Time.int(xmax),
+          );
+          tg.addTier(tier);
+
+          expect(tg, isNot(null));
+        },
+      );
+    },
+  );
+
+  group(
+    "TextGrid: Short",
+    () {
+      late TextGridSerializer tgs;
+      late String shortTgString;
+      setUp(() {
+        tgs = TextGridSerializer();
+        shortTgString =
+            File("test/assets/short_tg.TextGrid").readAsStringSync();
+      });
+
+      group(
+        'Loading',
+        () {
+          test(
+            "From String",
+            () {
+              expect(
+                () => tgs.fromString(shortTgString),
+                isNot(
+                  throwsA(
+                    isA<TextGridIOException>(),
+                  ),
+                ),
+              );
+            },
+          );
+
+          test(
+            'From File',
+            () async {
+              final result =
+                  tgs.fromFile(File('test/assets/short_tg.TextGrid'));
+              await expectLater(
+                result,
+                completion(
+                  isNot(
+                    throwsA(
+                      isA<TextGridIOException>(),
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+
+          test(
+            'From Path',
+            () async {
+              final result = tgs.fromPath('test/assets/short_tg.TextGrid');
+              await expectLater(
+                result,
+                completion(
+                  isNot(
+                    throwsA(
+                      isA<TextGridIOException>(),
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+
+      test(
+        'Equals',
+        () {
+          final textGrid = tgs.fromString(shortTgString);
+          final validatedTextGrid = tgs.fromString(shortTgString);
+
+          expect(textGrid, validatedTextGrid);
+        },
+      );
+
+      test(
+        'Performance Test',
+        () {
+          const xmax = 10000;
+          final List<Annotation> intervals = List.empty(growable: true);
+
+          for (int i = 0; i < xmax; ++i) {
+            intervals.add(
+              IntervalAnnotation(
+                startTime: i.toTime(),
+                endTime: (i + 1).toTime(),
+                text: i.toString(),
+              ),
+            );
+          }
+
+          final tier = IntervalTier(
+            name: "lots",
+            startTime: Time.zero,
+            endTime: xmax.toTime(),
+            annotations: intervals,
+          );
+          final tg = TextGrid(
+            startTime: Time.zero,
+            endTime: Time.int(xmax),
+          );
+          tg.addTier(tier);
+
+          expect(tg, isNot(null));
+        },
+      );
+    },
   );
 }

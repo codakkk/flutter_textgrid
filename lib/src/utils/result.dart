@@ -1,5 +1,5 @@
 class Result<TOk, TError> {
-  late bool _successFlag;
+  late final bool _successFlag;
   late TOk _successPayload;
   late TError _errorPayload;
 

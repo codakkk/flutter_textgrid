@@ -69,7 +69,7 @@ abstract class Tier implements ICloneable<Tier> {
         _endTime = endTime {
     this.annotations = List.empty(growable: true);
     if (annotations != null) {
-      this.addAnnotations(annotations);
+      addAnnotations(annotations);
     }
   }
 

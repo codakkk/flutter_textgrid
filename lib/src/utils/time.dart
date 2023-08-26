@@ -23,7 +23,7 @@ class Time implements Comparable<Time> {
   }
 
   @override
-  int get hashCode => super.hashCode;
+  int get hashCode => _value.hashCode;
 
   bool operator >(Time other) => this != other && _value - other._value > 0;
 

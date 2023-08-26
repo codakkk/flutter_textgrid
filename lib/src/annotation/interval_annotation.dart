@@ -23,7 +23,7 @@ class IntervalAnnotation extends Annotation {
     return IntervalAnnotation(
       startTime: startTime,
       endTime: endTime,
-      text: '$text',
+      text: text,
     );
   }
 }
