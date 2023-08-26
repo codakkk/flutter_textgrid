@@ -20,53 +20,53 @@ enum AddAnnotationError { overlap }
 abstract class Tier implements ICloneable<Tier> {
   late List<Annotation> annotations;
 
-  Time _start;
-  Time _end;
+  Time _startTime;
+  Time _endTime;
 
   String name;
 
   TierType tierType;
 
-  Time get start {
+  Time get startTime {
     if (annotations.isNotEmpty) {
-      return Time.min(annotations.first.start, _start);
+      return Time.min(annotations.first.startTime, _startTime);
     }
-    return _start;
+    return _startTime;
   }
 
-  set start(Time time) {
-    if (annotations.isNotEmpty && time > annotations.first.start) {
+  set startTime(Time time) {
+    if (annotations.isNotEmpty && time > annotations.first.startTime) {
       throw TextGridIOException(
           message:
               "Start time cannot be set to a value greater than first annotation starts");
     }
-    _start = time;
+    _startTime = time;
   }
 
-  Time get end {
+  Time get endTime {
     if (annotations.isNotEmpty) {
-      return Time.max(annotations.last.end, _end);
+      return Time.max(annotations.last.endTime, _endTime);
     }
-    return _end;
+    return _endTime;
   }
 
-  set end(Time time) {
-    if (annotations.isNotEmpty && time < annotations.last.end) {
+  set endTime(Time time) {
+    if (annotations.isNotEmpty && time < annotations.last.endTime) {
       throw TextGridIOException(
           message:
               "End time cannot be set to a value less than last annotation ends");
     }
-    _end = time;
+    _endTime = time;
   }
 
   Tier({
     required this.tierType,
     required this.name,
-    Time start = Time.zero,
-    Time end = Time.zero,
+    Time startTime = Time.zero,
+    Time endTime = Time.zero,
     List<Annotation>? annotations,
-  })  : _start = start,
-        _end = end {
+  })  : _startTime = startTime,
+        _endTime = endTime {
     this.annotations = List.empty(growable: true);
     if (annotations != null) {
       this.addAnnotations(annotations);
@@ -74,19 +74,20 @@ abstract class Tier implements ICloneable<Tier> {
   }
 
   Result<void, AddAnnotationError> addAnnotation(Annotation annotation) {
-    if (annotations.isEmpty || annotation.start >= annotations.last.end) {
+    if (annotations.isEmpty ||
+        annotation.startTime >= annotations.last.endTime) {
       annotations.add(annotation);
     } else {
       final overlapping = getAnnotationsBetweenTimepoints(
-        startTime: annotation.start,
-        endTime: annotation.end,
+        startTime: annotation.startTime,
+        endTime: annotation.endTime,
         leftOverlap: true,
         rightOverlap: true,
       );
 
       if (overlapping.isEmpty) {
         final startTimepoints = getStartTimepoints().toList();
-        final position = startTimepoints.bisectLeft(annotation.start.value);
+        final position = startTimepoints.bisectLeft(annotation.startTime.value);
         annotations.insert(position, annotation);
       } else {
         return Result.error(AddAnnotationError.overlap);
@@ -145,22 +146,23 @@ abstract class Tier implements ICloneable<Tier> {
   }
 
   Iterable<double> getStartTimepoints() =>
-      annotations.map((e) => e.start.value);
-  Iterable<double> getEndTimepoints() => annotations.map((e) => e.end.value);
+      annotations.map((e) => e.startTime.value);
+  Iterable<double> getEndTimepoints() =>
+      annotations.map((e) => e.endTime.value);
 
   @override
   bool operator ==(Object other) {
     if (other is! Tier) {
       return false;
     }
-    return start == other.start &&
-        end == other.end &&
+    return startTime == other.startTime &&
+        endTime == other.endTime &&
         name == other.name &&
         const ListEquality().equals(annotations, other.annotations);
   }
 
   @override
-  int get hashCode => Object.hash(start, end, name, annotations);
+  int get hashCode => Object.hash(startTime, endTime, name, annotations);
 }
 
 extension TiersX on List<Tier> {

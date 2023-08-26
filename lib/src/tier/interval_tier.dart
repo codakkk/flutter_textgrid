@@ -7,8 +7,8 @@ import 'tier.dart';
 class IntervalTier extends Tier {
   IntervalTier({
     required super.name,
-    super.start = Time.zero,
-    super.end = Time.zero,
+    super.startTime = Time.zero,
+    super.endTime = Time.zero,
     super.annotations,
   }) : super(tierType: TierType.interval);
 
@@ -20,37 +20,37 @@ class IntervalTier extends Tier {
     final tierCopy = this.clone();
 
     if (startTime != null) {
-      tierCopy.start = start;
+      tierCopy.startTime = startTime.toTime();
     }
 
     if (endTime != null) {
-      tierCopy.end = end;
+      tierCopy.endTime = endTime.toTime();
     }
 
     // If no intervals exist, add one interval from start to end
-    if (annotations.length == 0) {
+    if (annotations.isEmpty) {
       final empty = IntervalAnnotation(
         text: emptyString,
-        start: start,
-        end: end,
+        startTime: this.startTime,
+        endTime: this.endTime,
       );
       tierCopy.addAnnotation(empty);
     } else {
       // If necessary, add empty interval at start of tier
-      if (annotations[0].start > tierCopy.start) {
+      if (annotations[0].startTime > tierCopy.startTime) {
         final empty = IntervalAnnotation(
-          start: tierCopy.start,
-          end: annotations[0].start,
+          startTime: tierCopy.startTime,
+          endTime: annotations[0].startTime,
           text: emptyString,
         );
         tierCopy.addAnnotation(empty);
       }
 
       // If necessary, add empty interval at end of tier
-      if (annotations.last.end < tierCopy.end) {
+      if (annotations.last.endTime < tierCopy.endTime) {
         final empty = IntervalAnnotation(
-          start: annotations.last.end,
-          end: tierCopy.end,
+          startTime: annotations.last.endTime,
+          endTime: tierCopy.endTime,
           text: emptyString,
         );
         tierCopy.addAnnotation(empty);
@@ -59,13 +59,13 @@ class IntervalTier extends Tier {
       // Insert empty intervals in between non-meeting intervals
       for (int i = 0; i < annotations.length; ++i) {
         final annotation = annotations[i];
-        if (annotation.end >= annotations[i + 1].start) {
+        if (annotation.endTime >= annotations[i + 1].startTime) {
           continue;
         }
 
         final empty = IntervalAnnotation(
-          start: annotation.end,
-          end: annotation.start,
+          startTime: annotation.endTime,
+          endTime: annotation.startTime,
           text: emptyString,
         );
         tierCopy.addAnnotation(empty);
@@ -85,9 +85,9 @@ class IntervalTier extends Tier {
 
   @override
   int get hashCode => Object.hash(
-        super.start,
+        super.startTime,
         super.name,
-        super.end,
+        super.endTime,
         super.annotations,
       );
 
@@ -95,8 +95,8 @@ class IntervalTier extends Tier {
   IntervalTier clone() {
     return IntervalTier(
       name: '${this.name}',
-      start: this.start,
-      end: this.end,
+      startTime: this.startTime,
+      endTime: this.endTime,
       annotations: annotations.deepClone(),
     );
   }

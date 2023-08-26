@@ -5,8 +5,8 @@ import 'tier.dart';
 class PointTier extends Tier {
   PointTier({
     required super.name,
-    super.start = Time.zero,
-    super.end = Time.zero,
+    super.startTime = Time.zero,
+    super.endTime = Time.zero,
     super.annotations,
   }) : super(tierType: TierType.point);
 
@@ -21,9 +21,9 @@ class PointTier extends Tier {
 
   @override
   int get hashCode => Object.hash(
-        super.start,
+        super.startTime,
         super.name,
-        super.end,
+        super.endTime,
         super.annotations,
       );
 
@@ -31,8 +31,8 @@ class PointTier extends Tier {
   PointTier clone() {
     return PointTier(
       name: '${this.name}',
-      start: this.start,
-      end: this.end,
+      startTime: this.startTime,
+      endTime: this.endTime,
       annotations: annotations.deepClone(),
     );
   }

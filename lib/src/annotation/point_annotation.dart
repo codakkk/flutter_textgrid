@@ -5,20 +5,28 @@ class PointAnnotation extends Annotation {
   PointAnnotation({
     required Time time,
     required super.text,
-  }) : super(start: time, end: time);
+  })  : _time = time,
+        super(startTime: time, endTime: time);
 
-  Time get time => start;
+  Time _time;
+
+  Time get time => _time;
 
   set time(Time value) {
-    super.start = value;
-    super.end = value;
+    _time = value;
   }
 
-  set start(Time v) =>
-      throw UnsupportedError("[PointAnnotation]: use time instead of start.");
+  @override
+  Time get startTime => _time;
 
-  set end(Time v) =>
-      throw UnsupportedError("[PointAnnotation]: use time instead of end.");
+  @override
+  set startTime(Time v) => time = v;
+
+  @override
+  Time get endTime => _time;
+
+  @override
+  set endTime(Time v) => time = v;
 
   @override
   bool operator ==(Object other) {
@@ -29,7 +37,7 @@ class PointAnnotation extends Annotation {
   }
 
   @override
-  int get hashCode => Object.hash(start, end, text);
+  int get hashCode => Object.hash(startTime, endTime, text);
 
   @override
   PointAnnotation clone() {

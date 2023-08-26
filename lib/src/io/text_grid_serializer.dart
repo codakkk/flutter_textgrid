@@ -227,8 +227,8 @@ class TextGridSerializer {
       }
 
       Annotation annotation = IntervalAnnotation(
-        start: startAn.toTime(),
-        end: endAn.toTime(),
+        startTime: startAn.toTime(),
+        endTime: endAn.toTime(),
         text: text,
       );
       annotations.add(annotation);
@@ -242,8 +242,8 @@ class TextGridSerializer {
 
     return IntervalTier(
       name: name,
-      start: start.toTime(),
-      end: end.toTime(),
+      startTime: start.toTime(),
+      endTime: end.toTime(),
       annotations: annotations,
     );
   }
@@ -330,8 +330,8 @@ class TextGridSerializer {
 
     return PointTier(
       name: name,
-      start: start.toTime(),
-      end: end.toTime(),
+      startTime: start.toTime(),
+      endTime: end.toTime(),
       annotations: annotations,
     );
   }
@@ -360,12 +360,13 @@ class TextGridSerializer {
     for (final tier in correctedTextGrid.tiers) {
       result.add('"${tier.tierType.name}"');
       result.add('"${RegExp.escape(tier.tierType.name)}"');
-      result.add('${tier.start}, ${tier.end}, ${tier.annotations.length}');
+      result.add(
+          '${tier.startTime}, ${tier.endTime}, ${tier.annotations.length}');
 
       if (tier is IntervalTier) {
         for (final annotation in tier.annotations) {
           result.add(
-            '${annotation.start}$defaultLineSeparator${annotation.end}$defaultLineSeparator${RegExp.escape(annotation.text)}',
+            '${annotation.startTime}$defaultLineSeparator${annotation.endTime}$defaultLineSeparator${RegExp.escape(annotation.text)}',
           );
         }
       } else if (tier is PointTier) {
@@ -432,8 +433,8 @@ class TextGridSerializer {
       }
 
       str_tgt.write('\t\tname = "${tier.name}"$defaultLineSeparator');
-      str_tgt.write('\t\txmin = ${tier.start}$defaultLineSeparator');
-      str_tgt.write('\t\txmax = ${tier.end}$defaultLineSeparator');
+      str_tgt.write('\t\txmin = ${tier.startTime}$defaultLineSeparator');
+      str_tgt.write('\t\txmax = ${tier.endTime}$defaultLineSeparator');
 
       final annotations = tier.annotations;
 
@@ -450,8 +451,8 @@ class TextGridSerializer {
         for (int a = 0; a < annotations.length; a++) {
           IntervalAnnotation an = annotations[a] as IntervalAnnotation;
           str_tgt.write('\t\t\tintervals [${a + 1}]$defaultLineSeparator');
-          str_tgt.write('\t\t\t\txmin = ${an.start}$defaultLineSeparator');
-          str_tgt.write('\t\t\t\txmax = ${an.end}$defaultLineSeparator');
+          str_tgt.write('\t\t\t\txmin = ${an.startTime}$defaultLineSeparator');
+          str_tgt.write('\t\t\t\txmax = ${an.endTime}$defaultLineSeparator');
           str_tgt.write('\t\t\t\ttext = "${an.text}"$defaultLineSeparator');
         }
       } else if (tier is PointTier) {

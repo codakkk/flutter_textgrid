@@ -3,30 +3,50 @@ import 'package:flutter_textgrid/src/cloneable_interface.dart';
 import '../utils/utils.dart';
 
 abstract class Annotation implements ICloneable<Annotation> {
-  Time start;
-
-  Time end;
+  Time _startTime;
+  Time _endTime;
 
   String text;
 
-  Time get duration => end - start;
+  Time get startTime => _startTime;
+  set startTime(Time time) {
+    if (time > endTime) {
+      throw ArgumentError.value(time, "time", "Start time after end time.");
+    }
+
+    _startTime = time;
+  }
+
+  Time get endTime => _endTime;
+  set endTime(Time time) {
+    if (time < startTime) {
+      throw ArgumentError.value(time, "time", "End time before start time.");
+    }
+    _endTime = time;
+  }
+
+  Time get duration => endTime - startTime;
 
   Annotation({
-    required this.start,
-    required this.end,
+    required Time startTime,
+    required Time endTime,
     required this.text,
-  }) : assert(start <= end, "Start time after end time.");
+  })  : assert(startTime <= endTime, "Start time after end time."),
+        _startTime = startTime,
+        _endTime = endTime;
 
   @override
   bool operator ==(Object other) {
     if (other is! Annotation) {
       return false;
     }
-    return start == other.start && end == other.end && text == other.text;
+    return startTime == other.startTime &&
+        endTime == other.endTime &&
+        text == other.text;
   }
 
   @override
-  int get hashCode => Object.hash(start, end, text);
+  int get hashCode => Object.hash(startTime, endTime, text);
 }
 
 extension AnnotationsX on List<Annotation> {
