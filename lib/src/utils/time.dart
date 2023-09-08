@@ -50,6 +50,9 @@ class Time implements Comparable<Time> {
     if (this > other) return 1;
     return 0;
   }
+
+  @override
+  String toString() => _value.toString();
 }
 
 extension DoubleToTimeX on num {
