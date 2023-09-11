@@ -14,66 +14,46 @@ import 'text_grid_io_exception.dart';
 class TextGridLongSerializer implements ITextGridSerializer {
   @override
   TextGrid deserialize(List<String> lines) {
-    lines.removeAt(0);
-    lines.removeAt(0);
+    final textGrid = TextGrid();
 
-    // Extract START
-    var tmp = lines.removeAt(0);
-
-    var match = Patterns.propertyPattern.firstMatch(tmp);
-    final xminString = match?.group(2);
-    if (xminString == null) {
+    if (lines[4].split(' ')[1] != '<exists>') {
       throw TextGridIOException(
-        message: 'start line is not correctly formatted',
+        message: "Invalid TextGrid format.",
       );
     }
 
-    final double xmin = double.parse(xminString);
+    int index = 7;
 
-    // Extract END
+    while (index < lines.length) {
+      final numObj = int.parse(_getAttrVal(lines[index + 5]));
 
-    tmp = lines.removeAt(0);
-    match = Patterns.propertyPattern.firstMatch(tmp);
-    final xmaxString = match?.group(2);
-    if (xmaxString == null) {
-      throw TextGridIOException(
-        message: 'end line is not correctly formatted',
-      );
+      final tierClass = _getAttrVal(lines[index + 1]);
+      switch (tierClass) {
+        case '"IntervalTier"':
+          textGrid.addTier(
+            _readIntervalTier(
+              lines.sublist(index, index + 6 + (numObj * 4)),
+            ),
+          );
+          index += 6 + (numObj * 4);
+          break;
+        case '"TextTier"':
+          textGrid.addTier(
+            _readPointTier(
+              lines.sublist(
+                index,
+                index + 6 + (numObj * 3),
+              ),
+            ),
+          );
+          index += 6 + (numObj * 3);
+          break;
+        default:
+          throw TextGridIOException(message: 'Unknown tier type: $tierClass');
+      }
     }
 
-    final double xmax = double.parse(xmaxString);
-
-    // Why this line? Ask the java creator lol
-    lines.removeAt(0);
-
-    // Number of tiers
-    tmp = lines.removeAt(0);
-    match = Patterns.propertyPattern.firstMatch(tmp);
-    final noOfTiersString = match?.group(2);
-    if (noOfTiersString == null) {
-      throw TextGridIOException(
-        message: 'nb_tiers line is not correctly formatted',
-      );
-    }
-
-    final nbTiers = int.parse(noOfTiersString.trim());
-
-    lines.removeAt(0);
-
-    final tiers = _readLongTextGridTiers(lines);
-
-    if (tiers.length != nbTiers) {
-      throw TextGridIOException(
-        message:
-            'Inconsistency between the number of tiers parsed (${tiers.length}) and the expected number of tiers ($nbTiers)',
-      );
-    }
-
-    return TextGrid(
-      startTime: Time(xmin),
-      endTime: Time(xmax),
-      tiers: tiers,
-    );
+    return textGrid;
   }
 
   @override
@@ -148,224 +128,65 @@ class TextGridLongSerializer implements ITextGridSerializer {
     return result.join(Patterns.defaultLineSeparator);
   }
 
-  List<Tier> _readLongTextGridTiers(List<String> lines) {
-    late Tier tier;
-    final List<Tier> tiers = List.empty(growable: true);
-
-    var match = Patterns.tierPattern.firstMatch(lines[0]);
-    while (match != null) {
-      lines.removeAt(0);
-
-      final propertyMatch =
-          Patterns.propertyPattern.firstMatch(lines.removeAt(0));
-      if (propertyMatch != null && propertyMatch.group(1) == 'class') {
-        final type = propertyMatch.group(2);
-
-        tier = switch (type) {
-          'IntervalTier' => _readLongIntervalTier(lines),
-          'TextTier' => _readLongPointTier(lines),
-          _ =>
-            throw TextGridIOException(message: 'Unknown class of tier: $type'),
-        };
-      } else {
-        throw TextGridIOException(
-            message: "Tier's class should be defined here.");
-      }
-
-      tiers.add(tier);
-
-      if (lines.isEmpty) {
-        break;
-      }
-
-      match = Patterns.tierPattern.firstMatch(lines[0]);
-    }
-
-    return tiers;
+  String _getAttrVal(String x) {
+    return x.split(' = ')[1];
   }
 
-  Tier _readLongIntervalTier(List<String> lines) {
-    double start = -1;
-    double end = -1;
-    late String name;
+  PointTier _readPointTier(List<String> lines) {
+    final name = _deescapeString(_nameWithoutQuotes(lines[2]));
+    final startTime = Time(num.parse(_getAttrVal(lines[3])).toDouble());
+    final endTime = Time(num.parse(_getAttrVal(lines[4])).toDouble());
 
-    // Tier header
-    RegExpMatch? match = Patterns.intervalsPattern.firstMatch(lines[0]);
-    while (match == null) {
-      final line = lines[0];
+    final pt = PointTier(name: name, startTime: startTime, endTime: endTime);
 
-      final propertyMatch = Patterns.propertyPattern.firstMatch(line);
-      if (propertyMatch != null) {
-        final groupOne = propertyMatch.group(1);
-        final groupTwo = propertyMatch.group(2);
+    var i = 7;
 
-        if (groupOne == 'name') {
-          name = groupTwo!;
-        } else if (groupOne == 'xmin') {
-          start = double.parse(groupTwo!);
-        } else if (groupOne == 'xmax') {
-          end = double.parse(groupTwo!);
-        } else {
-          throw TextGridIOException(
-            message: 'Property $groupOne is unknown for a tier',
-          );
-        }
-      } else {
-        final intervalMatch = Patterns.intervalsPattern.firstMatch(line);
-        if (intervalMatch == null) {
-          throw TextGridIOException(
-            message: 'A property is expected here: $line',
-          );
-        }
-      }
-
-      lines.removeAt(0);
-      match = Patterns.intervalsPattern.firstMatch(lines[0]);
-    }
-
-    final List<Annotation> annotations = List.empty(growable: true);
-
-    lines.removeAt(0);
-    match = Patterns.intervalItemPattern.firstMatch(lines[0]);
-    while (match != null) {
-      lines.removeAt(0);
-      double startAn = -1;
-      double endAn = -1;
-      late String text;
-
-      match = Patterns.propertyPattern.firstMatch(lines[0]);
-      while (match != null) {
-        lines.removeAt(0);
-
-        final firstGroup = match.group(1);
-        final secondGroup = match.group(2);
-
-        if (firstGroup == 'text') {
-          text = secondGroup!;
-        } else if (firstGroup == 'xmin') {
-          startAn = double.parse(secondGroup!);
-        } else if (firstGroup == 'xmax') {
-          endAn = double.parse(secondGroup!);
-        } else {
-          throw TextGridIOException(
-            message: 'Property $firstGroup is unknown for an annotation',
-          );
-        }
-
-        if (lines.isEmpty) {
-          break;
-        }
-
-        match = Patterns.propertyPattern.firstMatch(lines[0]);
-      }
-
-      Annotation annotation = IntervalAnnotation(
-        startTime: startAn.toTime(),
-        endTime: endAn.toTime(),
-        text: text,
+    while (i < lines.length) {
+      final text = _nameWithoutQuotes(_getAttrVal(lines[i + 1]));
+      pt.addAnnotation(
+        PointAnnotation(
+          time: Time(num.parse(_getAttrVal(lines[i])).toDouble()),
+          text: text,
+        ),
       );
-      annotations.add(annotation);
 
-      if (lines.isEmpty) {
-        break;
-      }
-
-      match = Patterns.intervalItemPattern.firstMatch(lines[0]);
+      i += 3;
     }
 
-    return IntervalTier(
-      name: name,
-      startTime: start.toTime(),
-      endTime: end.toTime(),
-      annotations: annotations,
-    );
+    return pt;
   }
 
-  Tier _readLongPointTier(List<String> lines) {
-    double start = -1;
-    double end = -1;
-    late String name;
+  IntervalTier _readIntervalTier(List<String> lines) {
+    // name without quotes
+    final name = _deescapeString(_nameWithoutQuotes(lines[2]));
+    final startTime = Time(num.parse(_getAttrVal(lines[3])).toDouble());
+    final endTime = Time(num.parse(_getAttrVal(lines[4])).toDouble());
 
-    // Tier header
-    RegExpMatch? match = Patterns.pointsPattern.firstMatch(lines[0]);
-    while (match == null) {
-      String line = lines[0];
+    final it = IntervalTier(name: name, startTime: startTime, endTime: endTime);
 
-      match = Patterns.propertyPattern.firstMatch(line);
-      if (match != null) {
-        final groupOne = match.group(1);
-        final groupTwo = match.group(2);
+    var i = 7;
 
-        if (groupOne == 'name') {
-          name = groupTwo!;
-        } else if (groupOne == 'xmin') {
-          start = double.parse(groupTwo!);
-        } else if (groupOne == 'xmax') {
-          end = double.parse(groupTwo!);
-        } else {
-          throw TextGridIOException(
-            message: 'Property $groupOne is unknown for a tier',
-          );
-        }
-      } else {
-        match = Patterns.pointsPattern.firstMatch(line);
-        if (match == null) {
-          throw TextGridIOException(
-              message: 'A property is expected here: $line');
-        }
-      }
+    while (i < lines.length) {
+      final text = _nameWithoutQuotes(_getAttrVal(lines[i + 1]));
+      it.addAnnotation(
+        IntervalAnnotation(
+          startTime: Time(num.parse(_getAttrVal(lines[i])).toDouble()),
+          endTime: Time(num.parse(_getAttrVal(lines[i + 1])).toDouble()),
+          text: _deescapeString(text),
+        ),
+      );
 
-      lines.removeAt(0);
-      match = Patterns.pointsPattern.firstMatch(lines[0]);
+      i += 4;
     }
 
-    final List<Annotation> annotations = List.empty(growable: true);
-    lines.removeAt(0);
-    match = Patterns.pointItemPattern.firstMatch(lines[0]);
-    while (match != null) {
-      lines.removeAt(0);
-      double time = -1;
-      late String text;
+    return it;
+  }
 
-      match = Patterns.propertyPattern.firstMatch(lines[0]);
-      while (match != null) {
-        lines.removeAt(0);
+  String _nameWithoutQuotes(String text) {
+    return text.replaceAll('"', '');
+  }
 
-        final groupOne = match.group(1);
-        final groupTwo = match.group(2);
-
-        if (groupOne == 'mark') {
-          text = groupTwo!;
-        } else if (groupOne == 'number') {
-          time = double.parse(groupTwo!);
-        } else {
-          throw TextGridIOException(
-            message: 'Property $groupOne is unknown for an annotation',
-          );
-        }
-
-        if (lines.isEmpty) {
-          break;
-        }
-
-        match = Patterns.propertyPattern.firstMatch(lines[0]);
-      }
-
-      Annotation annotation = PointAnnotation(time: time.toTime(), text: text);
-      annotations.add(annotation);
-
-      if (lines.isEmpty) {
-        break;
-      }
-
-      match = Patterns.pointItemPattern.firstMatch(lines[0]);
-    }
-
-    return PointTier(
-      name: name,
-      startTime: start.toTime(),
-      endTime: end.toTime(),
-      annotations: annotations,
-    );
+  String _deescapeString(String text) {
+    return text.replaceAll('""', '"');
   }
 }

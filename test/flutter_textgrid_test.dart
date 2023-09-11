@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter_textgrid/flutter_textgrid.dart';
 import 'package:flutter_textgrid/src/io/text_grid_io_exception.dart';
-import 'package:flutter_textgrid/src/io/text_grid_serializer.dart';
 import 'package:test/test.dart';
 
 void expectTrue(dynamic actual) {
@@ -471,7 +470,7 @@ void main() {
           test(
             'From File',
             () async {
-              final result = tgs.fromFile(File('test/assets/tg1.TextGrid'));
+              final result = tgs.fromFile(File('test/assets/tg2.TextGrid'));
               await expectLater(
                 result,
                 completion(
