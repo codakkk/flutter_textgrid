@@ -133,7 +133,7 @@ class TextGridLongSerializer implements ITextGridSerializer {
   }
 
   PointTier _readPointTier(List<String> lines) {
-    final name = _deescapeString(_nameWithoutQuotes(lines[2]));
+    final name = _deescapeString(_getAttrVal(_nameWithoutQuotes(lines[2])));
     final startTime = Time(num.parse(_getAttrVal(lines[3])).toDouble());
     final endTime = Time(num.parse(_getAttrVal(lines[4])).toDouble());
 
@@ -158,7 +158,7 @@ class TextGridLongSerializer implements ITextGridSerializer {
 
   IntervalTier _readIntervalTier(List<String> lines) {
     // name without quotes
-    final name = _deescapeString(_nameWithoutQuotes(lines[2]));
+    final name = _deescapeString(_getAttrVal(_nameWithoutQuotes(lines[2])));
     final startTime = Time(num.parse(_getAttrVal(lines[3])).toDouble());
     final endTime = Time(num.parse(_getAttrVal(lines[4])).toDouble());
 
