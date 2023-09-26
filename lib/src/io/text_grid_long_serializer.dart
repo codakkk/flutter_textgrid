@@ -1,7 +1,6 @@
 import 'package:flutter_textgrid/src/io/text_grid_serializer_interface.dart';
 import 'package:flutter_textgrid/src/text_grid.dart';
 
-import '../annotation/annotation.dart';
 import '../annotation/interval_annotation.dart';
 import '../annotation/point_annotation.dart';
 import '../tier/interval_tier.dart';
@@ -167,7 +166,7 @@ class TextGridLongSerializer implements ITextGridSerializer {
     var i = 7;
 
     while (i < lines.length) {
-      final text = _nameWithoutQuotes(_getAttrVal(lines[i + 1]));
+      final text = _nameWithoutQuotes(_getAttrVal(lines[i + 2].trim()));
       it.addAnnotation(
         IntervalAnnotation(
           startTime: Time(num.parse(_getAttrVal(lines[i])).toDouble()),

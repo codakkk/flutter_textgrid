@@ -663,4 +663,81 @@ void main() {
       );
     },
   );
+
+  group(
+    "TextGrid: Big",
+    () {
+      late TextGridSerializer tgs;
+      late String shortTgString;
+      setUp(() {
+        tgs = TextGridSerializer();
+        shortTgString = File("test/assets/big.TextGrid").readAsStringSync();
+      });
+
+      group(
+        'Loading',
+        () {
+          test(
+            "From String",
+            () {
+              expect(
+                () => tgs.fromString(shortTgString),
+                isNot(
+                  throwsA(
+                    isA<TextGridIOException>(),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+
+      test(
+        'Tier test',
+        () {
+          final textGrid = tgs.fromString(shortTgString);
+          final annotation = textGrid.tiers[0].annotations.first;
+
+          expect(annotation.text, "");
+
+          final annotation2 = textGrid.tiers[0].annotations[1];
+
+          expect(annotation2.text, "prɔ");
+        },
+      );
+
+      test(
+        'Performance Test',
+        () {
+          const xmax = 10000;
+          final List<Annotation> intervals = List.empty(growable: true);
+
+          for (int i = 0; i < xmax; ++i) {
+            intervals.add(
+              IntervalAnnotation(
+                startTime: i.toTime(),
+                endTime: (i + 1).toTime(),
+                text: i.toString(),
+              ),
+            );
+          }
+
+          final tier = IntervalTier(
+            name: "lots",
+            startTime: Time.zero,
+            endTime: xmax.toTime(),
+            annotations: intervals,
+          );
+          final tg = TextGrid(
+            startTime: Time.zero,
+            endTime: Time.int(xmax),
+          );
+          tg.addTier(tier);
+
+          expect(tg, isNot(null));
+        },
+      );
+    },
+  );
 }

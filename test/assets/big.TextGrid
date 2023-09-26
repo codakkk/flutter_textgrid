@@ -1,0 +1,196 @@
+File type = "ooTextFile"
+Object class = "TextGrid"
+
+xmin = 0 
+xmax = 1.703265306122449 
+tiers? <exists> 
+size = 4 
+item []: 
+    item [1]:
+        class = "IntervalTier" 
+        name = """phonetic_syllables""" 
+        xmin = 0 
+        xmax = 1.703265306122449 
+        intervals: size = 12 
+        intervals [1]:
+            xmin = 0 
+            xmax = 0.291632653 
+            text = "" 
+        intervals [2]:
+            xmin = 0.291632653 
+            xmax = 0.42461998355400865 
+            text = "prɔ" 
+        intervals [3]:
+            xmin = 0.42461998355400865 
+            xmax = 0.5832712904302706 
+            text = "wan" 
+        intervals [4]:
+            xmin = 0.5832712904302706 
+            xmax = 0.7024264912157748 
+            text = "ta" 
+        intervals [5]:
+            xmin = 0.7024264912157748 
+            xmax = 0.7762237225786924 
+            text = "ra" 
+        intervals [6]:
+            xmin = 0.7762237225786924 
+            xmax = 0.9306532085025537 
+            text = "na" 
+        intervals [7]:
+            xmin = 0.9306532085025537 
+            xmax = 1.062658650382301 
+            text = "re" 
+        intervals [8]:
+            xmin = 1.062658650382301 
+            xmax = 1.1655030539092093 
+            text = "kje" 
+        intervals [9]:
+            xmin = 1.1655030539092093 
+            xmax = 1.2799118220471988 
+            text = "nə" 
+        intervals [10]:
+            xmin = 1.2799118220471988 
+            xmax = 1.4178838747288336 
+            text = "tʃe" 
+        intervals [11]:
+            xmin = 1.4178838747288336 
+            xmax = 1.6264364743993525 
+            text = "la" 
+        intervals [12]:
+            xmin = 1.6264364743993525 
+            xmax = 1.703265306122449 
+            text = "" 
+    item [2]:
+        class = "IntervalTier" 
+        name = "Notes" 
+        xmin = 0 
+        xmax = 1.703265306122449 
+        intervals: size = 1 
+        intervals [1]:
+            xmin = 0 
+            xmax = 1.703265306122449 
+            text = "" 
+    item [3]:
+        class = "IntervalTier" 
+        name = """phonological_syllables""" 
+        xmin = 0 
+        xmax = 1.703265306122449 
+        intervals: size = 16 
+        intervals [1]:
+            xmin = 0 
+            xmax = 0.291632653 
+            text = "" 
+        intervals [2]:
+            xmin = 0.291632653 
+            xmax = 0.37158947724227326 
+            text = "pe" 
+        intervals [3]:
+            xmin = 0.37158947724227326 
+            xmax = 0.42461998355400865 
+            text = "rɔ" 
+        intervals [4]:
+            xmin = 0.42461998355400865 
+            xmax = 0.5832712904302706 
+            text = "tan" 
+        intervals [5]:
+            xmin = 0.5832712904302706 
+            xmax = 0.6359330257533531 
+            text = "to" 
+        intervals [6]:
+            xmin = 0.6359330257533531 
+            xmax = 0.7024264912157748 
+            text = "la" 
+        intervals [7]:
+            xmin = 0.7024264912157748 
+            xmax = 0.7762237225786924 
+            text = "ra" 
+        intervals [8]:
+            xmin = 0.7762237225786924 
+            xmax = 0.8523698441118124 
+            text = "na" 
+        intervals [9]:
+            xmin = 0.8523698441118124 
+            xmax = 0.8995500713494387 
+            text = "le" 
+        intervals [10]:
+            xmin = 0.8995500713494387 
+            xmax = 0.9306532085025537 
+            text = "o" 
+        intervals [11]:
+            xmin = 0.9306532085025537 
+            xmax = 1.062658650382301 
+            text = "re" 
+        intervals [12]:
+            xmin = 1.062658650382301 
+            xmax = 1.1655030539092093 
+            text = "kje" 
+        intervals [13]:
+            xmin = 1.1655030539092093 
+            xmax = 1.2799118220471988 
+            text = "non" 
+        intervals [14]:
+            xmin = 1.2799118220471988 
+            xmax = 1.4178838747288336 
+            text = "tʃe" 
+        intervals [15]:
+            xmin = 1.4178838747288336 
+            xmax = 1.6264364743993525 
+            text = "la" 
+        intervals [16]:
+            xmin = 1.6264364743993525 
+            xmax = 1.703265306122449 
+            text = "" 
+    item [4]:
+        class = "IntervalTier" 
+        name = "word" 
+        xmin = 0 
+        xmax = 1.703265306122449 
+        intervals: size = 12 
+        intervals [1]:
+            xmin = 0 
+            xmax = 0.291632653 
+            text = "" 
+        intervals [2]:
+            xmin = 0.291632653 
+            xmax = 0.42461998355400865 
+            text = "però" 
+        intervals [3]:
+            xmin = 0.42461998355400865 
+            xmax = 0.6359330257533531 
+            text = "tanto" 
+        intervals [4]:
+            xmin = 0.6359330257533531 
+            xmax = 0.7024264912157748 
+            text = "la" 
+        intervals [5]:
+            xmin = 0.7024264912157748 
+            xmax = 0.8523698441118124 
+            text = "rana" 
+        intervals [6]:
+            xmin = 0.8523698441118124 
+            xmax = 0.8995500713494387 
+            text = "le" 
+        intervals [7]:
+            xmin = 0.8995500713494387 
+            xmax = 1.1655030539092093 
+            text = "orecchie" 
+        intervals [8]:
+            xmin = 1.1655030539092093 
+            xmax = 1.2799118220471988 
+            text = "non" 
+        intervals [9]:
+            xmin = 1.2799118220471988 
+            xmax = 1.4178838747288336 
+            text = "ce" 
+        intervals [10]:
+            xmin = 1.4178838747288336 
+            xmax = 1.4406483024809644 
+            text = "l'" 
+        intervals [11]:
+            xmin = 1.4406483024809644 
+            xmax = 1.6264364743993525 
+            text = "ha" 
+        intervals [12]:
+            xmin = 1.6264364743993525 
+            xmax = 1.703265306122449 
+            text = "" 
