@@ -25,7 +25,7 @@ class TextGridShortSerializer implements ITextGridSerializer {
     while (index < lines.length) {
       final numObj = int.parse(lines[index + 4]);
 
-      if (lines[index] == '"IntervalTier"') {
+      if (lines[index].trim() == '"IntervalTier"') {
         tg.addTier(
           _readShortIntervalTier(
             lines.sublist(index, index + 5 + numObj * 3),
@@ -33,7 +33,7 @@ class TextGridShortSerializer implements ITextGridSerializer {
         );
 
         index += 5 + (numObj * 3);
-      } else if (lines[index] == '"TextTier"') {
+      } else if (lines[index].trim() == '"TextTier"') {
         tg.addTier(
           _readShortPointTier(
             lines.sublist(index, index + 5 + numObj * 2),

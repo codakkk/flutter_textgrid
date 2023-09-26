@@ -28,7 +28,7 @@ class TextGridLongSerializer implements ITextGridSerializer {
       final numObj = int.parse(_getAttrVal(lines[index + 5]));
 
       final tierClass = _getAttrVal(lines[index + 1]);
-      switch (tierClass) {
+      switch (tierClass.trim()) {
         case '"IntervalTier"':
           textGrid.addTier(
             _readIntervalTier(
