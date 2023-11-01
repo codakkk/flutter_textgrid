@@ -463,7 +463,10 @@ void main() {
               TextGrid tgInput = tgs.fromString(tg1String);
               TextGrid tgValidated = tgs.fromString(tg1ValidatedString);
 
-              expect(tgInput, tgValidated);
+              expect(tgInput.startTime, Time(0));
+              expect(tgInput.endTime, Time(2));
+
+              expect(tgInput == tgValidated, true);
             },
           );
 

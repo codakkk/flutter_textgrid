@@ -21,6 +21,13 @@ class TextGridLongSerializer implements ITextGridSerializer {
       );
     }
 
+    final xmin = double.tryParse(_getAttrVal(lines[2]));
+    final xmax = double.tryParse(_getAttrVal(lines[3]));
+
+    if (xmin == null || xmax == null) {
+      throw TextGridIOException(message: 'Invalid xmin or xmax value.');
+    }
+
     int index = 7;
 
     while (index < lines.length) {
@@ -52,6 +59,8 @@ class TextGridLongSerializer implements ITextGridSerializer {
       }
     }
 
+    textGrid.startTime = Time(xmin);
+    textGrid.endTime = Time(xmax);
     return textGrid;
   }
 
@@ -132,7 +141,8 @@ class TextGridLongSerializer implements ITextGridSerializer {
   }
 
   PointTier _readPointTier(List<String> lines) {
-    final name = _deescapeString(_getAttrVal(_nameWithoutQuotes(lines[2])));
+    final name =
+        _deescapeString(_getAttrVal(_nameTrimmedWithoutQuotes(lines[2])));
     final startTime = Time(num.parse(_getAttrVal(lines[3])).toDouble());
     final endTime = Time(num.parse(_getAttrVal(lines[4])).toDouble());
 
@@ -141,7 +151,7 @@ class TextGridLongSerializer implements ITextGridSerializer {
     var i = 7;
 
     while (i < lines.length) {
-      final text = _nameWithoutQuotes(_getAttrVal(lines[i + 1]));
+      final text = _nameTrimmedWithoutQuotes(_getAttrVal(lines[i + 1]));
       pt.addAnnotation(
         PointAnnotation(
           time: Time(num.parse(_getAttrVal(lines[i])).toDouble()),
@@ -157,7 +167,8 @@ class TextGridLongSerializer implements ITextGridSerializer {
 
   IntervalTier _readIntervalTier(List<String> lines) {
     // name without quotes
-    final name = _deescapeString(_getAttrVal(_nameWithoutQuotes(lines[2])));
+    final name =
+        _deescapeString(_getAttrVal(_nameTrimmedWithoutQuotes(lines[2])));
     final startTime = Time(num.parse(_getAttrVal(lines[3])).toDouble());
     final endTime = Time(num.parse(_getAttrVal(lines[4])).toDouble());
 
@@ -166,7 +177,7 @@ class TextGridLongSerializer implements ITextGridSerializer {
     var i = 7;
 
     while (i < lines.length) {
-      final text = _nameWithoutQuotes(_getAttrVal(lines[i + 2].trim()));
+      final text = _nameTrimmedWithoutQuotes(_getAttrVal(lines[i + 2]));
       it.addAnnotation(
         IntervalAnnotation(
           startTime: Time(num.parse(_getAttrVal(lines[i])).toDouble()),
@@ -181,8 +192,8 @@ class TextGridLongSerializer implements ITextGridSerializer {
     return it;
   }
 
-  String _nameWithoutQuotes(String text) {
-    return text.replaceAll('"', '');
+  String _nameTrimmedWithoutQuotes(String text) {
+    return text.trim().replaceAll('"', '');
   }
 
   String _deescapeString(String text) {
