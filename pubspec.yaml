@@ -1,7 +1,7 @@
 name: flutter_textgrid
 description: Handle Praat TextGrid's format in pure Dart
 version: 0.0.1
-homepage: unina.it
+homepage: https://www.cirocarandente.com
 
 environment:
   sdk: ">=3.1.0 <4.0.0"
